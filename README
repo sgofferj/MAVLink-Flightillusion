@@ -1,5 +1,6 @@
 ------------------------------------------------------------------------------
-ArduIllusion - control Flight Illusion's sim instruments with Arduino
+MAVLink-FlighIllusion - INtegration of Flight Illusion Instruments into
+MAVLink sUAS groundstations.
 
      Copyright (c) 2013 Stefan Gofferje. All rights reserved.
 
