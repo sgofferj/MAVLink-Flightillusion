@@ -1,0 +1,8 @@
+------------------------------------------------------------------------------
+ArduIllusion - control Flight Illusion's sim instruments with Arduino
+
+     Copyright (c) 2013 Stefan Gofferje. All rights reserved.
+------------------------------------------------------------------------------
+
+0.01 - 19NOV2013
+Started cleaning up the tinker code from my test programs and moving it into the library.

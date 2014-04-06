@@ -1,0 +1,10 @@
+------------------------------------------------------------------------------
+ArduIllusion - control Flight Illusion's sim instruments with Arduino
+
+     Copyright (c) 2013 Stefan Gofferje. All rights reserved.
+------------------------------------------------------------------------------
+
+Installing instructions:
+
+Create a folder named ArduIllusion in you Arduino/libraries folder.
+Download the archive from GitHub and extract into the folder you created. 
