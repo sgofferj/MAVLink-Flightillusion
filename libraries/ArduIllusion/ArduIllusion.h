@@ -36,15 +36,23 @@
 
 #define rollSteps 10.667
 #define rollOffset 180
-#define pitchSteps 24
-#define pitchOffset 600
+#define pitchSteps 16
+#define pitchOffset 320
+
+#define GAUGE_ATTI 103
+
+#define CMD_RESET 1
+#define CMD_SETSPEED 3
+#define CMD_SETROLL 4
+#define CMD_SETPITCH 5
+#define CMD_SETLIGHT 8
 
 
 class FIGaugeSet {
   public:
     FIGaugeSet();
     void Init();
-    void setLight(char light);
+    void setLight(char gauge, char light);
     void setRoll(float angle);
     void setPitch(float angle);
   private:

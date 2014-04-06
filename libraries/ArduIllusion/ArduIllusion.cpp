@@ -58,28 +58,30 @@ void FIGaugeSet::sendCommand(char id, char cmd, long value) {
 // ----- Public --------------------------------------------------------------
 
 void FIGaugeSet::Init() {
-  sendCommand(103,8,0);
+  sendCommand(GAUGE_ATTI,CMD_SETLIGHT,0);
   delay(100);
-  sendCommand(103,3,64);
+  sendCommand(GAUGE_ATTI,CMD_SETSPEED,96);
   delay(100);
-  sendCommand(103,3,-64);
+  sendCommand(GAUGE_ATTI,CMD_SETSPEED,-96);
   delay(100);
-  sendCommand(103,1,0);
+  sendCommand(GAUGE_ATTI,CMD_RESET,0);
   delay(4000);
-  sendCommand(103,8,192);
+  sendCommand(GAUGE_ATTI,CMD_SETLIGHT,192);
   delay(100);
 }
 
-void FIGaugeSet::setLight(char light) {
-  sendCommand(103,8,light);
+void FIGaugeSet::setLight(char gauge, char light) {
+  sendCommand(gauge,CMD_SETLIGHT,light);
 }
 
 void FIGaugeSet::setRoll(float angle) {
-  sendCommand(103,4,(360-(angle+rollOffset))*rollSteps);
+  sendCommand(GAUGE_ATTI,CMD_SETROLL,(360-(angle+rollOffset))*rollSteps);
 }
 
 void FIGaugeSet::setPitch(float angle) {
-  sendCommand(103,5,-1*angle*pitchSteps+pitchOffset);
+  if ( (angle >= -20) && (angle <= 20) ) {
+    sendCommand(GAUGE_ATTI,CMD_SETPITCH,((-1*angle*pitchSteps)+pitchOffset));
+  }
 }
   
 

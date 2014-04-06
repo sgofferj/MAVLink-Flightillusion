@@ -103,6 +103,7 @@ void loop() {
   if (gcs_update()) {                  // Only update screen when a valid MAVLink package was received
     gaugeSet.setRoll(roll);
     gaugeSet.setPitch(pitch);
+    Serial.println(pitch*16+320);
   }
 }
 
