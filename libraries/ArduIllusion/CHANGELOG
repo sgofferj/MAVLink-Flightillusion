@@ -4,5 +4,13 @@ ArduIllusion - control Flight Illusion's sim instruments with Arduino
      Copyright (c) 2013 Stefan Gofferje. All rights reserved.
 ------------------------------------------------------------------------------
 
+0.03 - 17APR2014
+Digital altimeter (GSA-16) fully supported
+Added function for status query
+
+0.02 - 08APR2014
+Attitude indicator (GSA-34/35) fully supported
+Additional reworking and code beautifying
+
 0.01 - 19NOV2013
 Started cleaning up the tinker code from my test programs and moving it into the library.

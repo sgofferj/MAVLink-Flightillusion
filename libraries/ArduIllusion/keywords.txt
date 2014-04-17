@@ -1,2 +1,13 @@
 FIGaugeSet		KEYWORD1
-sendCommand		KEYWORD2 
+Init			KEYWORD2
+Query			KEYWORD2
+setLight		KEYWORD2
+gsa34_setSpeed		KEYWORD2
+gsa34_setRoll		KEYWORD2
+gsa34_setPitch		KEYWORD2
+gsa16_setSpeed		KEYWORD2
+gsa16_setAltitude	KEYWORD2
+gsa16_setPressure	KEYWORD2
+gsa16_setPressureMode	KEYWORD2
+gsa16_setIntensity	KEYWORD2
+
