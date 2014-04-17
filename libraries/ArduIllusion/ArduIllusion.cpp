@@ -57,33 +57,67 @@ void FIGaugeSet::sendCommand(char id, char cmd, long value) {
 
 // ----- Public --------------------------------------------------------------
 
-void FIGaugeSet::Init() {
-  sendCommand(GAUGE_ATTI,CMD_SETLIGHT,0);
-  delay(100);
-  sendCommand(GAUGE_ATTI,CMD_SETSPEED,96);
-  delay(100);
-  sendCommand(GAUGE_ATTI,CMD_SETSPEED,-96);
-  delay(100);
-  sendCommand(GAUGE_ATTI,CMD_RESET,0);
-  delay(4000);
-  sendCommand(GAUGE_ATTI,CMD_SETLIGHT,192);
-  delay(100);
+// ----- General functions ---------------------------------------------------
+
+void FIGaugeSet::Init(char gauge) {
+  sendCommand(gauge,CMD_RESET,0);
+}
+
+void FIGaugeSet::Query(char gauge) {
+  sendCommand(gauge,CMD_QUERY,0);
 }
 
 void FIGaugeSet::setLight(char gauge, char light) {
   sendCommand(gauge,CMD_SETLIGHT,light);
 }
 
-void FIGaugeSet::setRoll(float angle) {
-  sendCommand(GAUGE_ATTI,CMD_SETROLL,(360-(angle+rollOffset))*rollSteps);
+// ----- GSA-34, GSA-35 Attitude indicators ----------------------------------
+
+void FIGaugeSet::gsa34_setSpeed(char roll, char pitch) {
+  sendCommand(GSA34_ID,CMD_SETSPEED,roll);
+  sendCommand(GSA34_ID,CMD_SETSPEED,-1*pitch);
+}
+  
+void FIGaugeSet::gsa34_setRoll(long angle) {
+  sendCommand(GSA34_ID,GSA34_CMD_SETROLL,(360-(angle+rollOffset))*rollSteps);
 }
 
-void FIGaugeSet::setPitch(float angle) {
+void FIGaugeSet::gsa34_setPitch(long angle) {
   if ( (angle >= -20) && (angle <= 20) ) {
-    sendCommand(GAUGE_ATTI,CMD_SETPITCH,((-1*angle*pitchSteps)+pitchOffset));
+    sendCommand(GSA34_ID,GSA34_CMD_SETPITCH,((-1*angle*pitchSteps)+pitchOffset));
   }
 }
   
+// ----- GSA-16 Digital Altimeter ---------------------------------------------
+
+void FIGaugeSet::gsa16_setSpeed(char speed) {
+  sendCommand(GSA16_ID,CMD_SETSPEED,speed);
+}
+
+void FIGaugeSet::gsa16_setAltitude(long altitude) {
+  if ( (altitude >= -9999) && (altitude <= 50000) ) {
+    sendCommand(GSA16_ID,GSA16_CMD_SETALT,altitude);
+  }
+}
+
+void FIGaugeSet::gsa16_setPressure(long pressure) {
+  sendCommand(GSA16_ID,GSA16_CMD_SETPRES,pressure);
+}
+
+void FIGaugeSet::gsa16_setPressureMode(char unit, char control) {
+  long value = (unit << 8) + control;
+  sendCommand(GSA16_ID,GSA16_CMD_SETPRMOD,value);
+}
+
+void FIGaugeSet::gsa16_setIntensity(char altitude, char pressure, bool night) {
+  long value = 0;
+  if (night) value = 16384;
+  altitude &= 31;
+  pressure &= 31;
+  value += (altitude << 8) + pressure;
+  sendCommand(GSA16_ID,GSA16_CMD_SETINTENS,value);
+  Serial.println(value);
+}
 
   
   

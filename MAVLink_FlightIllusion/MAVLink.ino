@@ -40,19 +40,17 @@ void gcs_handleMessage(mavlink_message_t* msg)
       cog = packet.cog;
       break;
     }
- /*
     case MAVLINK_MSG_ID_GLOBAL_POSITION_INT:
     {
       // decode
       mavlink_global_position_int_t packet;
       mavlink_msg_global_position_int_decode(msg, &packet);
-      latitude = packet.lat;
-      longitude = packet.lon;
+      //latitude = packet.lat;
+      //longitude = packet.lon;
       if (GCS_UNITS == 0) altitude = packet.alt/1000;
       else if ( (GCS_UNITS == 1) || (GCS_UNITS == 2) ) altitude = (packet.alt/1000)*3.28084;
       break;
     }
-*/
     case MAVLINK_MSG_ID_GPS_STATUS:
     {
       mavlink_gps_status_t packet;

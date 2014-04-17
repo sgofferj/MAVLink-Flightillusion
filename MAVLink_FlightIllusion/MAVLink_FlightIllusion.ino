@@ -92,18 +92,21 @@ unsigned long mav_utime=0;  // ??
 int status_mavlink=0; // Changes to 1 when a valid MAVLink package was received, 0 when no package or an invalid package was received
 
 void setup() {
-  Serial.begin(57600);
-  mavlPort.begin(57600);
-  gaugePort.begin(38400);
-  gaugeSet.Init();
+  Serial.begin(115200,256,256);
+  mavlPort.begin(57600,256,256);
+  gaugePort.begin(38400,256,256);
+  gaugeSet.setLight(103,192);
+  gaugeSet.setLight(101,192);
+  gaugeSet.gsa16_setIntensity(31,31,false);
   Serial.println("Started");
 }
 
 void loop() {
   if (gcs_update()) {                  // Only update screen when a valid MAVLink package was received
-    gaugeSet.setRoll(roll);
-    gaugeSet.setPitch(pitch);
-    Serial.println(pitch*16+320);
+    gaugeSet.gsa34_setRoll(roll);
+    gaugeSet.gsa34_setPitch(pitch);
+    gaugeSet.gsa16_setAltitude(altitude);
+    Serial.println(altitude);
   }
 }
 

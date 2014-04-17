@@ -39,22 +39,41 @@
 #define pitchSteps 16
 #define pitchOffset 320
 
-#define GAUGE_ATTI 103
+#define GSA34_ID 103
+#define GSA16_ID 101
 
 #define CMD_RESET 1
 #define CMD_SETSPEED 3
-#define CMD_SETROLL 4
-#define CMD_SETPITCH 5
+#define CMD_QUERY 7
 #define CMD_SETLIGHT 8
-
+#define GSA34_CMD_SETROLL 4
+#define GSA34_CMD_SETPITCH 5
+#define GSA16_CMD_SETALT 4
+#define GSA16_CMD_SETPRMOD 5
+#define GSA16_CMD_SETPRES 12
+#define GSA16_CMD_SETINTENS 10
 
 class FIGaugeSet {
   public:
     FIGaugeSet();
-    void Init();
-    void setLight(char gauge, char light);
-    void setRoll(float angle);
-    void setPitch(float angle);
+
+    // ----- General functions --------------------------------------------------------------------------------
+    void Init(char gauge);
+    void Query(char gauge);
+    void setLight(char gauge, char light);  // Low byte: DL000000, D=display, L=lights
+    
+    // ----- GSA-34, GSA-35 Attitude indicators ---------------------------------------------------------------
+    void gsa34_setSpeed(char roll, char pitch);
+    void gsa34_setRoll(long angle);
+    void gsa34_setPitch(long angle);
+
+    // ----- GSA-16 Digital Altimeter -------------------------------------------------------------------------
+    void gsa16_setSpeed(char speed);
+    void gsa16_setAltitude(long altitude);
+    void gsa16_setPressure(long pressure);
+    void gsa16_setPressureMode(char unit, char control);  // unit: 0=inHg, 1=mmHg; control: 0: user, 1: MAV
+    void gsa16_setIntensity(char altitude, char pressure, bool night);
+    
   private:
     void sendCommand(char id, char cmd, long value);
 };
