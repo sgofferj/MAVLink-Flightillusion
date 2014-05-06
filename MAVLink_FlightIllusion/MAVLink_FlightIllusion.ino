@@ -92,12 +92,21 @@ unsigned long mav_utime=0;  // ??
 int status_mavlink=0; // Changes to 1 when a valid MAVLink package was received, 0 when no package or an invalid package was received
 
 void setup() {
+  pinMode(13,OUTPUT);
   Serial.begin(115200,256,256);
   mavlPort.begin(57600,256,256);
   gaugePort.begin(38400,256,256);
+//  gaugeSet.Init(103);
+  delay(50);
+//  gaugeSet.Init(101);
+  delay(50);
   gaugeSet.setLight(103,192);
+  delay(50);
   gaugeSet.setLight(101,192);
-  gaugeSet.gsa16_setIntensity(31,31,false);
+  delay(50);
+  gaugeSet.gsa16_setIntensity(1,1,false);
+  delay(50);
+  gaugeSet.gsa16_setPressureMode(0,1);
   Serial.println("Started");
 }
 
@@ -121,9 +130,11 @@ boolean gcs_update()
     {
       char c = mavlPort.read();
       if(mavlink_parse_char(0, c, &msg, &status)) {
+        digitalWrite(13,HIGH);
         gcs_handleMessage(&msg);
         status_mavlink = 1;
         result=true;
+        digitalWrite(13,LOW);
       }
     }
     return result;

@@ -58,23 +58,23 @@ class FIGaugeSet {
     FIGaugeSet();
 
     // ----- General functions --------------------------------------------------------------------------------
-    void Init(char gauge);
-    void Query(char gauge);
-    void setLight(char gauge, char light);  // Low byte: DL000000, D=display, L=lights
+    void Init(byte gauge);
+    void Query(byte gauge);
+    void setLight(byte gauge, byte light);  // Low byte: DL000000, D=display, L=lights
     
     // ----- GSA-34, GSA-35 Attitude indicators ---------------------------------------------------------------
-    void gsa34_setSpeed(char roll, char pitch);
+    void gsa34_setSpeed(byte roll, byte pitch);
     void gsa34_setRoll(long angle);
     void gsa34_setPitch(long angle);
 
     // ----- GSA-16 Digital Altimeter -------------------------------------------------------------------------
-    void gsa16_setSpeed(char speed);
+    void gsa16_setSpeed(byte speed);
     void gsa16_setAltitude(long altitude);
     void gsa16_setPressure(long pressure);
-    void gsa16_setPressureMode(char unit, char control);  // unit: 0=inHg, 1=mmHg; control: 0: user, 1: MAV
-    void gsa16_setIntensity(char altitude, char pressure, bool night);
+    void gsa16_setPressureMode(byte unit, byte control);  // unit: 0=inHg, 1=mmHg; control: 0: user, 1: MAV
+    void gsa16_setIntensity(byte altitude, byte pressure, bool night);
     
   private:
-    void sendCommand(char id, char cmd, long value);
+    void sendCommand(byte id, byte cmd, long value);
 };
 #endif

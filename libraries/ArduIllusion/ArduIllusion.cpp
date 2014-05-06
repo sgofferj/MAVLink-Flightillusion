@@ -29,9 +29,9 @@ FIGaugeSet::FIGaugeSet() {
   
 }
 // ----- Private -------------------------------------------------------------
-void FIGaugeSet::sendCommand(char id, char cmd, long value) {
-  char buffer[]={0x00,0x00,0x00,0x00,0x00,0x00};
-  char bytethree, int2, cnt;
+void FIGaugeSet::sendCommand(byte id, byte cmd, long value) {
+  byte buffer[]={0x00,0x00,0x00,0x00,0x00,0x00};
+  byte bytethree, int2, cnt;
   long long1;
   buffer[1]=id;      // Gauge ID
   buffer[5]=0xff;    // Terminator
@@ -59,21 +59,21 @@ void FIGaugeSet::sendCommand(char id, char cmd, long value) {
 
 // ----- General functions ---------------------------------------------------
 
-void FIGaugeSet::Init(char gauge) {
+void FIGaugeSet::Init(byte gauge) {
   sendCommand(gauge,CMD_RESET,0);
 }
 
-void FIGaugeSet::Query(char gauge) {
+void FIGaugeSet::Query(byte gauge) {
   sendCommand(gauge,CMD_QUERY,0);
 }
 
-void FIGaugeSet::setLight(char gauge, char light) {
+void FIGaugeSet::setLight(byte gauge, byte light) {
   sendCommand(gauge,CMD_SETLIGHT,light);
 }
 
 // ----- GSA-34, GSA-35 Attitude indicators ----------------------------------
 
-void FIGaugeSet::gsa34_setSpeed(char roll, char pitch) {
+void FIGaugeSet::gsa34_setSpeed(byte roll, byte pitch) {
   sendCommand(GSA34_ID,CMD_SETSPEED,roll);
   sendCommand(GSA34_ID,CMD_SETSPEED,-1*pitch);
 }
@@ -90,7 +90,7 @@ void FIGaugeSet::gsa34_setPitch(long angle) {
   
 // ----- GSA-16 Digital Altimeter ---------------------------------------------
 
-void FIGaugeSet::gsa16_setSpeed(char speed) {
+void FIGaugeSet::gsa16_setSpeed(byte speed) {
   sendCommand(GSA16_ID,CMD_SETSPEED,speed);
 }
 
@@ -104,12 +104,12 @@ void FIGaugeSet::gsa16_setPressure(long pressure) {
   sendCommand(GSA16_ID,GSA16_CMD_SETPRES,pressure);
 }
 
-void FIGaugeSet::gsa16_setPressureMode(char unit, char control) {
-  long value = (unit << 8) + control;
+void FIGaugeSet::gsa16_setPressureMode(byte unit, byte control) {
+  long value = (control << 8) + unit;
   sendCommand(GSA16_ID,GSA16_CMD_SETPRMOD,value);
 }
 
-void FIGaugeSet::gsa16_setIntensity(char altitude, char pressure, bool night) {
+void FIGaugeSet::gsa16_setIntensity(byte altitude, byte pressure, bool night) {
   long value = 0;
   if (night) value = 16384;
   altitude &= 31;
