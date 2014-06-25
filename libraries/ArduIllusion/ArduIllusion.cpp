@@ -164,12 +164,14 @@ void FIGaugeSet::gsa72_setUTC(byte hours, byte minutes, byte seconds) {
   sendCommand(GSA72_ID,GSA72_CMD_SETUTC,value);
 }
 
-void FIGaugeSet::gsa72_setFLT(unsigned long seconds) {
+void FIGaugeSet::gsa72_setFLT(long seconds) {
+  if (seconds > 65535) seconds = 65535-seconds;
   sendCommand(GSA72_ID,GSA72_CMD_SETFLT,seconds);
 }
 
 void FIGaugeSet::gsa72_setFLT(byte hours, byte minutes, byte seconds) {
-  long value = hours*3600 + minutes*60 + seconds;
+  long value = (hours*3600L) + (minutes*60L) + seconds;
+  if (value > 65535) value = 65535-value;
   sendCommand(GSA72_ID,GSA72_CMD_SETFLT,value);
 }
 

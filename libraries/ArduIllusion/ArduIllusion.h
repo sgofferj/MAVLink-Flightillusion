@@ -103,7 +103,7 @@ class FIGaugeSet {
  
     // ----- GSA-72 General Aviation Clock -------------------------------------
     void gsa72_setUTC(byte hours, byte minutes, byte seconds);
-    void gsa72_setFLT(unsigned long seconds);
+    void gsa72_setFLT(long seconds);
     void gsa72_setFLT(byte hours, byte minutes, byte seconds);
     void gsa72_setLocal(byte hours);
     void gsa72_setTempC(int decicelsius);
