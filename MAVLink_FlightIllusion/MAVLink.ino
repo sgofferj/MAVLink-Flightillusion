@@ -35,9 +35,11 @@ void gcs_handleMessage(mavlink_message_t* msg)
       mavlink_gps_raw_int_t packet;
       mavlink_msg_gps_raw_int_decode(msg, &packet);
       gpsfix = packet.fix_type;
-      mav_utime = packet.time_usec;
+      uint64_t microsecs = packet.time_usec;
+      mav_uptime = microsecs/1000000;
       numSats = packet.satellites_visible;
       cog = packet.cog;
+      gpshdop = packet.eph;
       break;
     }
     case MAVLINK_MSG_ID_GLOBAL_POSITION_INT:
@@ -72,19 +74,30 @@ void gcs_handleMessage(mavlink_message_t* msg)
       else if ( (GCS_UNITS == 1) || (GCS_UNITS == 2) ) vsi=packet.climb*3.28084;
      break;
     }
-    case MAVLINK_MSG_ID_RAW_PRESSURE:
+    case MAVLINK_MSG_ID_SCALED_PRESSURE:
     {
       // decode
-      mavlink_raw_pressure_t packet;
-      mavlink_msg_raw_pressure_decode(msg, &packet);
+      mavlink_scaled_pressure_t packet;
+      mavlink_msg_scaled_pressure_decode(msg, &packet);
+      tempcelsius=packet.temperature;
       break;
     }
     case MAVLINK_MSG_ID_SYS_STATUS:
     {
-
       mavlink_sys_status_t packet;
       mavlink_msg_sys_status_decode(msg, &packet);
       vbat = packet.voltage_battery;
+      break;
+    }
+    case MAVLINK_MSG_ID_SYSTEM_TIME:
+    {
+      mavlink_system_time_t packet;
+      mavlink_msg_system_time_decode(msg, &packet);
+      systemtime=packet.time_unix_usec/1000000;
+      DateTime dt(systemtime);
+      utch=dt.hour();
+      utcm=dt.minute();
+      utcs=dt.second();
       break;
     }
   }

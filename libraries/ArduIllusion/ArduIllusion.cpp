@@ -71,6 +71,10 @@ void FIGaugeSet::setLight(byte gauge, byte light) {
   sendCommand(gauge,CMD_SETLIGHT,light);
 }
 
+void FIGaugeSet::setAddress(byte gauge,byte address) {
+  sendCommand(gauge,CMD_SETADR,address);
+}
+
 // ----- GSA-34, GSA-35 Attitude indicators ----------------------------------
 
 void FIGaugeSet::gsa34_setSpeed(byte roll, byte pitch) {
@@ -116,8 +120,73 @@ void FIGaugeSet::gsa16_setIntensity(byte altitude, byte pressure, bool night) {
   pressure &= 31;
   value += (altitude << 8) + pressure;
   sendCommand(GSA16_ID,GSA16_CMD_SETINTENS,value);
-  Serial.println(value);
+  Serial.println(value,BIN); //DEBUG
 }
 
-  
-  
+// ----- GSA-40 Gyrocompass ---------------------------------------------------
+
+void FIGaugeSet::gsa40_setSpeed(byte speed) {
+  sendCommand(GSA40_ID,CMD_SETSPEED,speed);
+}
+
+void FIGaugeSet::gsa40_setDisc(int degree) {
+  int value = degree+gyroOffset;
+  if (value >= 360) value = value - 360;
+  sendCommand(GSA40_ID,GSA40_CMD_SETDISC,value*gyroSteps);
+}
+
+void FIGaugeSet::gsa40_setBug(int degree) {
+  int value = degree+gyroOffset;
+  if (value >= 360) value = value - 360;
+  sendCommand(GSA40_ID,GSA40_CMD_SETBUG,value*gyroSteps);
+}
+
+void FIGaugeSet::gsa40_setEncoderMask(byte left, byte right) {
+  long value = (right << 8) + left;
+  sendCommand(GSA40_ID,GSA40_CMD_SETENCODERMASK,value);
+}
+
+// ----- GSA-20 IAS -----------------------------------------------------------
+// --- NOT READY ---
+void FIGaugeSet::gsa20_setSpeed(byte speed) {
+  sendCommand(GSA20_ID,CMD_SETSPEED,speed);
+}
+
+void FIGaugeSet::gsa20_setIAS(int mps) {
+  sendCommand(GSA20_ID,GSA20_CMD_SETPOS,mps);
+}
+
+// ----- GSA-72 General Aviation Clock -------------------------------------
+
+void FIGaugeSet::gsa72_setUTC(byte hours, byte minutes, byte seconds) {
+  long value = (hours*3600L) + (minutes*60L) + seconds;
+  if (value > 65535) value = 65535-value;
+  sendCommand(GSA72_ID,GSA72_CMD_SETUTC,value);
+}
+
+void FIGaugeSet::gsa72_setFLT(unsigned long seconds) {
+  sendCommand(GSA72_ID,GSA72_CMD_SETFLT,seconds);
+}
+
+void FIGaugeSet::gsa72_setFLT(byte hours, byte minutes, byte seconds) {
+  long value = hours*3600 + minutes*60 + seconds;
+  sendCommand(GSA72_ID,GSA72_CMD_SETFLT,value);
+}
+
+void FIGaugeSet::gsa72_setLocal(byte hours) {
+  sendCommand(GSA72_ID,GSA72_CMD_SETLOCAL,hours);
+}
+
+void FIGaugeSet::gsa72_setTempC(int decicelsius) {
+  byte tempc = (decicelsius+50) / 100;
+  byte tempf = 9/5*(tempc+32);
+  sendCommand(GSA72_ID,GSA72_CMD_SETTEMPC,tempc);
+  sendCommand(GSA72_ID,GSA72_CMD_SETTEMPF,tempf);
+}
+
+void FIGaugeSet::gsa72_setVolt(long millivolts) {
+  int volts = millivolts/1000;
+  int decivolts = (millivolts - (volts * 1000)) / 100;
+  int value = (volts << 8) + decivolts;
+  sendCommand(GSA72_ID,GSA72_CMD_SETVOLT,value);
+}

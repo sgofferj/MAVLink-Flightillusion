@@ -4,6 +4,11 @@ ArduIllusion - control Flight Illusion's sim instruments with Arduino
      Copyright (c) 2013 Stefan Gofferje. All rights reserved.
 ------------------------------------------------------------------------------
 
+0.05 - 26JUN2014
+Gyrocompass (GSA-40) fully supported
+General Aviation Clock (GSA-72) fully supported
+Started work on GSA-20 and GSA-23
+
 0.04 - 04MAY2014
 Minor bugfixes and code reviews
 

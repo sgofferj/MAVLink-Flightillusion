@@ -10,14 +10,25 @@
 
 // we have separate helpers disabled to make it possible
 // to select MAVLink 1.0 in the arduino GUI build
-//#define MAVLINK_SEPARATE_HELPERS
+#define MAVLINK_SEPARATE_HELPERS
+
+// define our own MAVLINK_MESSAGE_CRC() macro to allow it to be put
+// into progmem
+#define MAVLINK_MESSAGE_CRC(msgid) mavlink_get_message_crc(msgid)
+
+#if defined( __AVR_ATmega1280__ ) || defined( __AVR_ATmega2560__ )
+#include <util/crc16.h>
+#define HAVE_CRC_ACCUMULATE
+#endif
 
 #include "include/mavlink/v1.0/ardupilotmega/version.h"
 
-// this allows us to make mavlink_message_t much smaller
-#define MAVLINK_MAX_PAYLOAD_LEN MAVLINK_MAX_DIALECT_PAYLOAD_SIZE
+// this allows us to make mavlink_message_t much smaller. It means we
+// can't support the largest messages in common.xml, but we don't need
+// those for APM
+#define MAVLINK_MAX_PAYLOAD_LEN 96
 
-#define MAVLINK_COMM_NUM_BUFFERS 1
+#define MAVLINK_COMM_NUM_BUFFERS 2
 #include "include/mavlink/v1.0/mavlink_types.h"
 
 /// MAVLink stream used for HIL interaction
@@ -94,21 +105,34 @@ static inline uint16_t comm_get_available(mavlink_channel_t chan)
 /// Check for available transmit space on the nominated MAVLink channel
 ///
 /// @param chan		Channel to check
-/// @returns		Number of bytes available, -1 for error
-static inline int comm_get_txspace(mavlink_channel_t chan)
+/// @returns		Number of bytes available
+static inline uint16_t comm_get_txspace(mavlink_channel_t chan)
 {
+	int16_t ret = 0;
     switch(chan) {
 	case MAVLINK_COMM_0:
-		return mavlink_comm_0_port->txspace();
+		ret = mavlink_comm_0_port->txspace();
 		break;
 	case MAVLINK_COMM_1:
-		return mavlink_comm_1_port->txspace();
+		ret = mavlink_comm_1_port->txspace();
 		break;
 	default:
 		break;
 	}
-    return -1;
+	if (ret < 0) {
+		ret = 0;
+	}
+    return (uint16_t)ret;
 }
+
+#ifdef HAVE_CRC_ACCUMULATE
+// use the AVR C library implementation. This is a bit over twice as
+// fast as the C version
+static inline void crc_accumulate(uint8_t data, uint16_t *crcAccum)
+{
+	*crcAccum = _crc_ccitt_update(*crcAccum, data);
+}
+#endif
 
 #define MAVLINK_USE_CONVENIENCE_FUNCTIONS
 #include "include/mavlink/v1.0/ardupilotmega/mavlink.h"
@@ -117,5 +141,8 @@ uint8_t mavlink_check_target(uint8_t sysid, uint8_t compid);
 
 // return a MAVLink variable type given a AP_Param type
 uint8_t mav_var_type(enum ap_var_type t);
+
+// return CRC byte for a mavlink message ID
+uint8_t mavlink_get_message_crc(uint8_t msgid);
 
 #endif // GCS_MAVLink_h

@@ -5,6 +5,9 @@
 //#include <AP_Math.h>
 #include <GCS_MAVLink.h>
 
+#include <Wire.h>
+#include <RTClib.h>
+
 #include <ArduIllusion.h>
 
 #define _VERSION "V0.1"
@@ -76,6 +79,11 @@ unsigned int grs=0;  // Ground speed
 int heading=0;       // Heading (not course over ground!)
 unsigned int cog=0;  // Course over ground (from GPS)
 int vsi=0;           // Vertical speed
+unsigned int gpshdop=0;
+int tempcelsius;     // Temperature from Baro
+byte utch,utcm,utcs; // Time
+byte timezone = +3;
+byte localhour = 0;
 
 // Technical data
 uint8_t received_sysid=0;   // ID of heartbeat sender
@@ -86,7 +94,10 @@ int cmode=0;                // MAVLink custom mode
 int gpsfix=0;               // GPS fix status, 0 = no fix, 1 = dead reckoning, 2 = 2D-fix, 3 = 3D-fix
 int numSats=0;              // Number of satellites used in position fix
 unsigned int vbat=0;        // battery voltage
-unsigned long mav_utime=0;  // ??
+long mav_uptime=0;          // ??
+long systemtime=0;          // ??
+long oldtime=0;
+
 
 // Ground station stuff
 int status_mavlink=0; // Changes to 1 when a valid MAVLink package was received, 0 when no package or an invalid package was received
@@ -96,18 +107,23 @@ void setup() {
   Serial.begin(115200,256,256);
   mavlPort.begin(57600,256,256);
   gaugePort.begin(38400,256,256);
-//  gaugeSet.Init(103);
-  delay(50);
 //  gaugeSet.Init(101);
   delay(50);
-  gaugeSet.setLight(103,192);
+  gaugeSet.setLight(103,192); // Horizon
+  gaugeSet.setLight(105,192); // Gyro
+  gaugeSet.setLight(109,192); // Clock
+  delay(50);
+  gaugeSet.gsa34_setSpeed(96,96);
+  delay(50);
+  gaugeSet.gsa40_setSpeed(96);
+  delay(50);
+  gaugeSet.gsa16_setIntensity(1,1,true);
   delay(50);
   gaugeSet.setLight(101,192);
   delay(50);
-  gaugeSet.gsa16_setIntensity(1,1,false);
-  delay(50);
   gaugeSet.gsa16_setPressureMode(0,1);
-  Serial.println("Started");
+  delay(50);
+  gaugeSet.gsa16_setAltitude(0);
 }
 
 void loop() {
@@ -115,7 +131,19 @@ void loop() {
     gaugeSet.gsa34_setRoll(roll);
     gaugeSet.gsa34_setPitch(pitch);
     gaugeSet.gsa16_setAltitude(altitude);
-    Serial.println(altitude);
+    gaugeSet.gsa40_setDisc(heading);
+    gaugeSet.gsa40_setBug(Angle_Home);
+    gaugeSet.gsa72_setVolt(vbat);
+    gaugeSet.gsa72_setTempC(tempcelsius);
+    if (systemtime > (oldtime+10)) {
+      gaugeSet.gsa72_setUTC(utch,utcm,utcs);
+      localhour = utch + timezone;
+      if (localhour > 23) localhour -= 24;
+      gaugeSet.gsa72_setLocal(localhour);
+      oldtime = systemtime;
+    }
+    gaugeSet.gsa72_setFLT(mav_uptime);
+    if (gpshdop <= 9999) gaugeSet.gsa16_setPressure(gpshdop);
   }
 }
 

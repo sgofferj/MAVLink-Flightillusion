@@ -10,4 +10,14 @@ gsa16_setAltitude	KEYWORD2
 gsa16_setPressure	KEYWORD2
 gsa16_setPressureMode	KEYWORD2
 gsa16_setIntensity	KEYWORD2
-
+gsa40_setSpeed		KEYWORD2
+gsa40_setDisc		KEYWORD2
+gsa40_setBug		KEYWORD2
+gsa40_setEncoderMask	KEYWORD2
+gsa20_setSpeed		KEYWORD2
+gsa20_setIAS		KEYWORD2
+gsa72_setUTC		KEYWORD2
+gsa72_setFLT		KEYWORD2
+gsa72_setLocal		KEYWORD2
+gsa72_setTempC		KEYWORD2
+gsa72_setVolt		KEYWORD2
