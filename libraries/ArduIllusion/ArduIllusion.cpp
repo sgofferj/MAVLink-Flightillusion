@@ -31,20 +31,21 @@ FIGaugeSet::FIGaugeSet() {
 // ----- Private -------------------------------------------------------------
 void FIGaugeSet::sendCommand(byte id, byte cmd, long value) {
   byte buffer[]={0x00,0x00,0x00,0x00,0x00,0x00};
-  byte bytethree, int2, cnt;
+  byte bytethree, cnt;
+  int int2;
   long long1;
   buffer[1]=id;      // Gauge ID
   buffer[5]=0xff;    // Terminator
   
   long1 = abs(value);
-  int2 = long1 >> 8;
+  int2 = (int) (long1 >> 8);
   
-  buffer[3]=(long1 & 0xff) | 0x01;
-  buffer[4]=(int2 & 0xff) | 0x02;
+  buffer[3] = ( (byte) long1 & 0xff) | 0x01;
+  buffer[4] = ( (byte) int2 & 0xff) | 0x02;
 
   bytethree = cmd << 4;
-  bytethree |= (long1 & 0x01);
-  bytethree |= (int2 & 0x02);
+  bytethree |= ( (byte) long1 & 0x01);
+  bytethree |= ( (byte) int2 & 0x02);
   if (value < 0) bytethree |= 0x0C;
   else bytethree |= 0x08; 
 
@@ -52,6 +53,7 @@ void FIGaugeSet::sendCommand(byte id, byte cmd, long value) {
   
   for (cnt=0;cnt<=5;cnt++) {
     gaugePort.write(buffer[cnt]);
+    delay(2); //necessary because some gauges are too slow in handling serial bytes
   }
 }
 
@@ -82,11 +84,11 @@ void FIGaugeSet::gsa34_setSpeed(byte roll, byte pitch) {
   sendCommand(GSA34_ID,CMD_SETSPEED,-1*pitch);
 }
   
-void FIGaugeSet::gsa34_setRoll(long angle) {
+void FIGaugeSet::gsa34_setRoll(int angle) {
   sendCommand(GSA34_ID,GSA34_CMD_SETROLL,(360-(angle+rollOffset))*rollSteps);
 }
 
-void FIGaugeSet::gsa34_setPitch(long angle) {
+void FIGaugeSet::gsa34_setPitch(int angle) {
   if ( (angle >= -20) && (angle <= 20) ) {
     sendCommand(GSA34_ID,GSA34_CMD_SETPITCH,((-1*angle*pitchSteps)+pitchOffset));
   }
@@ -114,7 +116,7 @@ void FIGaugeSet::gsa16_setPressureMode(byte unit, byte control) {
 }
 
 void FIGaugeSet::gsa16_setIntensity(byte altitude, byte pressure, bool night) {
-  long value = 0;
+  int value = 0;
   if (night) value = 16384;
   altitude &= 31;
   pressure &= 31;
@@ -142,7 +144,7 @@ void FIGaugeSet::gsa40_setBug(int degree) {
 }
 
 void FIGaugeSet::gsa40_setEncoderMask(byte left, byte right) {
-  long value = (right << 8) + left;
+  int value = (right << 8) + left;
   sendCommand(GSA40_ID,GSA40_CMD_SETENCODERMASK,value);
 }
 
@@ -158,6 +160,11 @@ void FIGaugeSet::gsa20_setIAS(int mps) {
 
 // ----- GSA-72 General Aviation Clock -------------------------------------
 
+void FIGaugeSet::gsa72_setUTC(long seconds) {
+  if (seconds > 65535) seconds = 65535-seconds;
+  sendCommand(GSA72_ID,GSA72_CMD_SETUTC,seconds);
+}
+
 void FIGaugeSet::gsa72_setUTC(byte hours, byte minutes, byte seconds) {
   long value = (hours*3600L) + (minutes*60L) + seconds;
   if (value > 65535) value = 65535-value;
@@ -165,13 +172,13 @@ void FIGaugeSet::gsa72_setUTC(byte hours, byte minutes, byte seconds) {
 }
 
 void FIGaugeSet::gsa72_setFLT(long seconds) {
-  if (seconds > 65535) seconds = 65535-seconds;
+  if (seconds > 65535L) seconds = 65535L-seconds;
   sendCommand(GSA72_ID,GSA72_CMD_SETFLT,seconds);
 }
 
 void FIGaugeSet::gsa72_setFLT(byte hours, byte minutes, byte seconds) {
   long value = (hours*3600L) + (minutes*60L) + seconds;
-  if (value > 65535) value = 65535-value;
+  if (value > 65535L) value = 65535L-value;
   sendCommand(GSA72_ID,GSA72_CMD_SETFLT,value);
 }
 

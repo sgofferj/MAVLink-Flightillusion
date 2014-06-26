@@ -22,8 +22,8 @@
  #include "wiring.h"
 #endif
 // ... and remove some of their stupid macros
-#undef round
-#undef abs
+//#undef round //Don't uncomment - messes with sendCommand!
+//#undef abs //Don't uncomment - messes with sendCommand!
 
 // prog_char_t is used as a wrapper type for prog_char, which is
 // a character stored in flash. By using this wrapper type we can

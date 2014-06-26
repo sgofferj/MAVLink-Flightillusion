@@ -81,8 +81,8 @@ class FIGaugeSet {
     
     // ----- GSA-34, GSA-35 Attitude indicators ---------------------------------------------------------------
     void gsa34_setSpeed(byte roll, byte pitch);
-    void gsa34_setRoll(long angle);
-    void gsa34_setPitch(long angle);
+    void gsa34_setRoll(int angle);
+    void gsa34_setPitch(int angle);
 
     // ----- GSA-16 Digital Altimeter -------------------------------------------------------------------------
     void gsa16_setSpeed(byte speed);
@@ -102,6 +102,7 @@ class FIGaugeSet {
     void gsa20_setIAS(int mps);
  
     // ----- GSA-72 General Aviation Clock -------------------------------------
+    void gsa72_setUTC(long seconds);
     void gsa72_setUTC(byte hours, byte minutes, byte seconds);
     void gsa72_setFLT(long seconds);
     void gsa72_setFLT(byte hours, byte minutes, byte seconds);

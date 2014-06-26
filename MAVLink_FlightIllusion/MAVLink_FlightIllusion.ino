@@ -1,7 +1,7 @@
 //#include <progmem.h>
 //#include <EEPROM.h>
 #include <FastSerial.h>
-#include <AP_Common.h>
+//#include <AP_Common.h>
 //#include <AP_Math.h>
 #include <GCS_MAVLink.h>
 
@@ -104,26 +104,26 @@ int status_mavlink=0; // Changes to 1 when a valid MAVLink package was received,
 
 void setup() {
   pinMode(13,OUTPUT);
+  digitalWrite(13,HIGH);
   Serial.begin(115200,256,256);
   mavlPort.begin(57600,256,256);
   gaugePort.begin(38400,256,256);
-//  gaugeSet.Init(101);
-  delay(50);
+  delay(3000);
+  gaugeSet.setLight(101,0); // Alti
+  gaugeSet.setLight(103,0); // Horizon
+  gaugeSet.setLight(105,0); // Gyro
+  gaugeSet.setLight(109,0); // Clock
+  delay(1000);
+  gaugeSet.gsa16_setPressureMode(0,1);
+  gaugeSet.gsa16_setAltitude(0);
+  gaugeSet.gsa16_setIntensity(1,1,true);
+  gaugeSet.setLight(101,192); // Alti
   gaugeSet.setLight(103,192); // Horizon
   gaugeSet.setLight(105,192); // Gyro
   gaugeSet.setLight(109,192); // Clock
-  delay(50);
   gaugeSet.gsa34_setSpeed(96,96);
-  delay(50);
   gaugeSet.gsa40_setSpeed(96);
-  delay(50);
-  gaugeSet.gsa16_setIntensity(1,1,true);
-  delay(50);
-  gaugeSet.setLight(101,192);
-  delay(50);
-  gaugeSet.gsa16_setPressureMode(0,1);
-  delay(50);
-  gaugeSet.gsa16_setAltitude(0);
+  digitalWrite(13,LOW);
 }
 
 void loop() {
@@ -135,7 +135,7 @@ void loop() {
     gaugeSet.gsa40_setBug(Angle_Home);
     gaugeSet.gsa72_setVolt(vbat);
     gaugeSet.gsa72_setTempC(tempcelsius);
-    if (systemtime > (oldtime+10)) {
+    if ( (systemtime > (oldtime+300)) ) {
       gaugeSet.gsa72_setUTC(utch,utcm,utcs);
       localhour = utch + timezone;
       if (localhour > 23) localhour -= 24;
